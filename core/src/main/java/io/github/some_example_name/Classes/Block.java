@@ -35,4 +35,10 @@ public class Block{
         this.texture= new Texture(s);
         this.sprite= new Sprite(this.texture);
     }
+
+    public void dispose() {
+        if (sprite.getTexture() != null) {
+            sprite.getTexture().dispose();
+        }
+    }
 }

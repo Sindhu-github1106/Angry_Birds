@@ -99,11 +99,11 @@ public class Menu implements Screen {
 
     @Override
     public void dispose() {
-        menuboxImage.dispose();
-        resumeGameImage.dispose();
-        homeButtonImage.dispose();
-        saveAndExitImage.dispose();
-        backgroundImage.dispose();
+//        menuboxImage.dispose();
+//        resumeGameImage.dispose();
+//        homeButtonImage.dispose();
+//        saveAndExitImage.dispose();
+//        backgroundImage.dispose();
 
     }
 }

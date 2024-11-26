@@ -233,14 +233,14 @@ public class Level2 implements Screen {
                 winScreenDraw=1;
 
             } else if (losespriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                System.out.println("Mouse click is overlapping with the sprite!"+mousePos.x+"   "+mousePos.y);
-                winScreenDraw=2;
-
-            } else if (MenuBounds.contains(mousePos.x,500-mousePos.y)){
-                System.out.println("Go to Menu");
-                //game.setScreen(new Menu(this.game,2));
-
+                System.out.println("Mouse click is overlapping with the sprite!" + mousePos.x + "   " + mousePos.y);
+                winScreenDraw = 2;
             }
+//            } else if (MenuBounds.contains(mousePos.x,500-mousePos.y)){
+//                System.out.println("Go to Menu");
+//                //game.setScreen(new Menu(this.game,2));
+//
+//            }
         }
     }
 

@@ -31,3 +31,9 @@ Useful Gradle tasks and flags:
 
 Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
 For example, `core:clean` removes `build` folder only from the `core` project.
+
+
+Please install libgdx and intellij
+
+The program must be run from IntelliJ, and the launcher lwjl3Launhcer must be run to display the program
+The tutorial to A sample project ont he libgdx website was used as a reference.
