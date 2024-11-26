@@ -108,12 +108,12 @@ public class Level2 implements Screen {
         chuckBird = new Bird("chuck");
         chuckBird.setTexture("chuck.png");
         chuckBird.setSize(50.0f, 50.0f);
-        chuckBird.setPos(50, 122);
+        chuckBird.setPos(0, 122);
 
         bombBird = new Bird("bomb");
         bombBird.setTexture("bomb.png");
         bombBird.setSize(50.0f, 50.0f);
-        bombBird.setPos(100, 122);
+        bombBird.setPos(60, 122);
 
         catapult = new Catapult();
         catapult.setTexture("catapult.png");
@@ -160,7 +160,7 @@ public class Level2 implements Screen {
         if (chuckBird != null) chuckBird.sprite.draw(spriteBatch);
         if (bombBird != null) bombBird.sprite.draw(spriteBatch);
 
-        bigpig.setPos(5.8f*100,2.35f*100);
+        bigpig.setPos(5.8f*98,2.35f*100);
         bigpig.sprite.draw(spriteBatch);
         nextLevel.setPosition(3.3f*100,.8f*100);
         backSprite.setPosition(2.7f*100,.8f*100);
