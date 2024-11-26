@@ -107,12 +107,10 @@ public class Level1 implements Screen {
         redBird.setSize(50.0f, 50.0f);
         redBird.setPos(0, 122);
 
-
-
         bombBird = new Bird("bomb");
         bombBird.setTexture("bomb.png");
         bombBird.setSize(50.0f, 50.0f);
-        bombBird.setPos(100, 122);
+        bombBird.setPos(60, 122);
 
         catapult = new Catapult();
         catapult.setTexture("catapult.png");
@@ -124,9 +122,9 @@ public class Level1 implements Screen {
         smallpig.setSize(.40f*100,.40f*100);
 
 
-        woodOne = new Block("wood",1);
-        woodOne.setTexture("wood1.png");
-        woodOne.setSize(1f*100,1f*100);
+        woodOne = new Block("stone",1);
+        woodOne.setTexture("stoone1.png");
+        woodOne.setSize(1f*150,1f*150);
 
         currentBird = null;
         isReleased = false;
@@ -167,7 +165,7 @@ public class Level1 implements Screen {
         loseSprite.setPosition(3.7f*100,4f*100);
         loseSprite.draw(spriteBatch);
 
-        smallpig.setPos(5.8f*100,1.4f*100);
+        smallpig.setPos(5.8f*105,1.4f*108);
         smallpig.sprite.draw(spriteBatch);
 
         woodOne.setPos(5.5f*100,1.2f*100);
