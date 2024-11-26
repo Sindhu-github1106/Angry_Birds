@@ -122,12 +122,12 @@ public class Level3 implements Screen {
         chuckBird = new Bird("chuck");
         chuckBird.setTexture("chuck.png");
         chuckBird.setSize(50.0f, 50.0f);
-        chuckBird.setPos(50, 122);
+        chuckBird.setPos(60, 122);
 
         bombBird = new Bird("bomb");
         bombBird.setTexture("bomb.png");
         bombBird.setSize(50.0f, 50.0f);
-        bombBird.setPos(100, 122);
+        bombBird.setPos(120, 122);
 
         catapult = new Catapult();
         catapult.setTexture("catapult.png");
@@ -166,7 +166,7 @@ public class Level3 implements Screen {
         woodOne2.setSize(1f*100,1f*100);
 
         glassTwo = new Block("glass",2);
-        glassTwo.setTexture("glass2.png");
+        glassTwo.setTexture("glass2.jpg");
         glassTwo.setSize(1*100,.2f*100);
 
         glassOne = new Block("glass",1);
@@ -189,7 +189,7 @@ public class Level3 implements Screen {
         bigpig.setSize(.75f*100,.75f*100);
 
         kingpig=new Pig("king");
-        kingpig.setTexture("kingpiggie.png");
+        kingpig.setTexture("kingfullhealth.png");
 
         currentBird = null;
         isReleased = false;
@@ -220,7 +220,7 @@ public class Level3 implements Screen {
         Menu.setPosition(0.2f*100,4.1f*100);
         Menu.draw(spriteBatch);
 
-        kingpig.setPos(4.6f*97,2.35f*100);
+        kingpig.setPos(4.6f*99,2.35f*100);
         kingpig.sprite.draw(spriteBatch);
 
         smallpig.setPos(5.8f*100,1.4f*100);
