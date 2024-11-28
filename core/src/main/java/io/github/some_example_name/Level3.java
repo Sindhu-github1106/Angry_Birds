@@ -1,3 +1,4 @@
+
 package io.github.some_example_name;
 
 import com.badlogic.gdx.Input;
@@ -18,7 +19,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import io.github.some_example_name.Classes.Pig;
 
-public class Level1 implements Screen {
+public class Level3 implements Screen {
     private final Game game;
     private SpriteBatch spriteBatch;
     private FitViewport viewport;
@@ -33,11 +34,21 @@ public class Level1 implements Screen {
     private Texture MenuTexture;
     private Texture winTexture;
     private Texture loseTexture;
-    private Bird redBird, bombBird;
+    private Bird redBird, chuckBird, bombBird;
     private Bird currentBird;
     private Catapult catapult;
+
+    Block glassOne;
+    Block glassTwo;
+    Block glassThree;
     Block woodOne;
+    Block woodTwo;
+    Block woodThree;
+    Block woodOne2;
     Pig smallpig;
+    Pig smallpig2;
+    Pig bigpig;
+    Pig kingpig;
     Sprite winScreen;
     Sprite loseScreen;
     Sprite nextLevel;
@@ -53,7 +64,7 @@ public class Level1 implements Screen {
     private boolean isReleased;
     private boolean isBirdMovingToCatapult;
 
-    public Level1(Game game, String s) {
+    public Level3(Game game, String s) {
         this.game = game;
         if (s.equals("night.png") || s.equals("night_resume.png")) {
             this.bg = new Texture("night.jpg");
@@ -102,36 +113,87 @@ public class Level1 implements Screen {
         loseScreenTexture = new Texture("loseoverlay.png");
         loseScreen = new Sprite(loseScreenTexture);
         loseScreen.setSize(4f*100,3.5f*100);
+
         redBird = new Bird("red");
         redBird.setTexture("birdred.png");
         redBird.setSize(50.0f, 50.0f);
         redBird.setPos(0, 122);
 
+        chuckBird = new Bird("chuck");
+        chuckBird.setTexture("chuck.png");
+        chuckBird.setSize(50.0f, 50.0f);
+        chuckBird.setPos(60, 122);
+
         bombBird = new Bird("bomb");
         bombBird.setTexture("bomb.png");
         bombBird.setSize(50.0f, 50.0f);
-        bombBird.setPos(60, 122);
+        bombBird.setPos(120, 122);
 
         catapult = new Catapult();
         catapult.setTexture("catapult.png");
         catapult.setSize(75.0f, 150.0f);
         catapult.setPos(1f * 100, 1.20f * 100);
 
+//        smallpig = new Pig("small");
+//        smallpig.setTexture("small.png");
+//        smallpig.setSize(.40f*100,.40f*100);
+//
+//        bigpig = new Pig("big");
+//        bigpig.setTexture("jaitrika.png");
+//        bigpig.setSize(.75f*100,.75f*100);
+//
+//        woodTwo = new Block("wood",2);
+//        woodTwo.setTexture("wood2.png");
+//        woodTwo.setSize(1*100,.2f*100);
+//
+//        woodOne = new Block("wood",1);
+//        woodOne.setTexture("wood1.png");
+//        woodOne.setSize(1f*100,1f*100);
+        woodTwo = new Block("wood",2);
+        woodTwo.setTexture("wood2.png");
+        woodTwo.setSize(1*100,.2f*100);
+
+        woodOne = new Block("wood",1);
+        woodOne.setTexture("wood1.png");
+        woodOne.setSize(1f*100,1f*100);
+
+        woodThree = new Block("wood",3);
+        woodThree.setTexture("wood3.png");
+        woodThree.setSize(1f*100,1f*100);;
+
+        woodOne2 = new Block("wood",1);
+        woodOne2.setTexture("wood1.png");
+        woodOne2.setSize(1f*100,1f*100);
+
+        glassTwo = new Block("glass",2);
+        glassTwo.setTexture("glass2.jpg");
+        glassTwo.setSize(1*100,.2f*100);
+
+        glassOne = new Block("glass",1);
+        glassOne.setTexture("glass1.png");
+        glassOne.setSize(1f*100,1f*100);
+
+        glassThree = new Block("glass",1);
+        glassThree.setTexture("glass3.png");
+        glassThree.setSize(1f*100,1f*100);
         smallpig = new Pig("small");
         smallpig.setTexture("small.png");
         smallpig.setSize(.40f*100,.40f*100);
 
+        smallpig2 = new Pig("small");
+        smallpig2.setTexture("small.png");
+        smallpig2.setSize(.40f*100,.40f*100);
 
-        woodOne = new Block("stone",1);
-        woodOne.setTexture("stoone1.png");
-        woodOne.setSize(1f*150,1f*150);
+        bigpig = new Pig("big");
+        bigpig.setTexture("jaitrika.png");
+        bigpig.setSize(.75f*100,.75f*100);
+
+        kingpig=new Pig("king");
+        kingpig.setTexture("kingfullhealth.png");
 
         currentBird = null;
         isReleased = false;
         isBirdMovingToCatapult = false;
-    }
-    public void change(){
-        game.setScreen(new Level2(this.game,theme));
     }
 
     @Override
@@ -145,10 +207,9 @@ public class Level1 implements Screen {
         spriteBatch.draw(ground, 0, 0, viewport.getWorldWidth(), 122);
 
         catapult.sprite.draw(spriteBatch);
-
         if (redBird != null) redBird.sprite.draw(spriteBatch);
+        if (chuckBird != null) chuckBird.sprite.draw(spriteBatch);
         if (bombBird != null) bombBird.sprite.draw(spriteBatch);
-
 
         nextLevel.setPosition(3.3f*100,.8f*100);
         backSprite.setPosition(2.7f*100,.8f*100);
@@ -159,17 +220,41 @@ public class Level1 implements Screen {
         Menu.setPosition(0.2f*100,4.1f*100);
         Menu.draw(spriteBatch);
 
+        kingpig.setPos(4.6f*99,2.35f*100);
+        kingpig.sprite.draw(spriteBatch);
+
+        smallpig.setPos(5.8f*100,1.4f*100);
+        smallpig.sprite.draw(spriteBatch);
+
+        smallpig2.setPos(5.8f*100,2.55f*100);
+        smallpig2.sprite.draw(spriteBatch);
+
+        woodOne.setPos(5.5f*100,1.2f*100);
+        woodOne.sprite.draw(spriteBatch);
+
+        woodOne2.setPos(5.5f*100,2.35f*100);
+        woodOne2.sprite.draw(spriteBatch);
+
+        woodTwo.setPos(5.5f*100,2.18f*100);
+        woodTwo.sprite.draw(spriteBatch);
+
+        glassTwo.setPos(4.5f*100,2.18f*100);
+        glassTwo.sprite.draw(spriteBatch);
+
+        woodThree.setPos(4.5f*100,1.2f*100);
+        woodThree.sprite.draw(spriteBatch);
+
+        glassThree.setPos(5.5f*100,3.3f*100);
+        glassThree.sprite.draw(spriteBatch);
+
+        glassOne.setPos(6.5f*100,1.2f*100);
+        glassOne.sprite.draw(spriteBatch);
+
         winSprite.setPosition(2.7f*100,4f*100);
         winSprite.draw(spriteBatch);
 
         loseSprite.setPosition(3.7f*100,4f*100);
         loseSprite.draw(spriteBatch);
-
-        smallpig.setPos(5.8f*105,1.4f*108);
-        smallpig.sprite.draw(spriteBatch);
-
-        woodOne.setPos(5.5f*100,1.2f*100);
-        woodOne.sprite.draw(spriteBatch);
 
         if (winScreenDraw==1) {
             winScreen.draw(spriteBatch);
@@ -181,7 +266,7 @@ public class Level1 implements Screen {
             backSprite.draw(spriteBatch);
         }
         spriteBatch.end();
-input();
+        input();
         handleInput();
         updateBirdPosition(delta);
     }
@@ -199,15 +284,15 @@ input();
 
             if (winScreenDraw==1){
                 if (nextLevelBounds.contains(mousePos.x, 500-mousePos.y)){
-                    game.setScreen(new Level2(this.game,theme));
+                    game.setScreen(new HomeScreen(this.game));//MAYBE IMPLEMENT A SCREEN TELL ALL LEVELS HAVE BEEN COMPLETED (STATS :PIGS POPPED) START NEW GAME?EXIT GAME?
                 } else if (backSpriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                    game.setScreen(new LevelMap_Resume(game, "night_resume.png"));
+                    game.setScreen(new LevelMap_l3unclocked(game, "night_l3unclocked.png"));
                 }
             } else if (winScreenDraw==2) {
                 if (retrySpriteBounds.contains(mousePos.x, 500-mousePos.y)){
-                    game.setScreen(new Level1(this.game,this.theme));
+                    game.setScreen(new Level3(this.game,this.theme));
                 } else if (backSpriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                    game.setScreen(new LevelMap_Start(game, "night_resume.png"));
+                    game.setScreen(new LevelMap_l3unclocked(game, "night_l3unclocked.png"));
                 }
             }
 
@@ -232,12 +317,13 @@ input();
         if (Gdx.input.justTouched() && currentBird == null && !isBirdMovingToCatapult) {
             // Bird selection
             Bird selectedBird = null;
-            if (redBird != null && redBird.sprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
-                selectedBird = redBird;
-
+            if (chuckBird != null && chuckBird.sprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
+                selectedBird = chuckBird;
             } else if (bombBird != null && bombBird.sprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
                 selectedBird = bombBird;
             }
+            else if (redBird != null && redBird.sprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
+                selectedBird = redBird;}
 
             if (selectedBird != null) {
                 currentBird = selectedBird;
@@ -290,21 +376,26 @@ input();
             // Check if bird hits ground
             if (currentBird.posy <= 122) {
                 // Remove current bird
-                if (currentBird == redBird) {
-                    redBird.texture.dispose();
-                    redBird = null;
+                if (currentBird == chuckBird) {
+                    chuckBird.texture.dispose();
+                    chuckBird = null;
                 }
 
                 else if (currentBird == bombBird) {
                     bombBird.texture.dispose();
                     bombBird=null;
                 }
+                else if (currentBird == redBird) {
+                    redBird.texture.dispose();
+                    redBird=null;
+                }
+
 
                 currentBird = null;
                 isReleased = false;
 
                 // Progress to next bird or end game
-                if (redBird == null && bombBird == null) {
+                if ( chuckBird == null && bombBird == null) {
                     System.out.println("Birds are finished");
                 }
             }
@@ -332,3 +423,4 @@ input();
         ground.dispose();
     }
 }
+
