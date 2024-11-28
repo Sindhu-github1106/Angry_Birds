@@ -9,6 +9,7 @@ birdred.png
 bomb.png
 catapult.png
 chuck.png
+createx
 day.png
 day_l3unclocked.png
 day_resume.png
