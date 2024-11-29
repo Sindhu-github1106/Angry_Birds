@@ -1,5 +1,4 @@
 package io.github.some_example_name;
-
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
@@ -43,12 +42,10 @@ public class Level1 implements Screen {
     Sprite retrySprite;
     Sprite Menu;
     public String theme;
-
     private Vector2 initialCatapultPosition;
     private float dragRadius;
     private boolean isReleased;
     private boolean isBirdMovingToCatapult;
-
     public Level1(Game game, String s) {
         this.game = game;
         if (s.equals("night.png") || s.equals("night_resume.png")) {
@@ -58,12 +55,10 @@ public class Level1 implements Screen {
         } else if (s.equals("spooky.png") || s.equals("spooky_resume.png")){
             this.bg = new Texture("halloween.png");
         }
-
         this.theme = s;
         this.initialCatapultPosition = new Vector2(100, 235);
         this.dragRadius = 50;
     }
-
     public String getLevelMapStartTheme(String theme) {
         String map_theme = "";
         if (theme.equals("night.jpg")) {
@@ -88,7 +83,6 @@ public class Level1 implements Screen {
         }
         return map_theme;
     }
-
 
     @Override
     public void show() {
