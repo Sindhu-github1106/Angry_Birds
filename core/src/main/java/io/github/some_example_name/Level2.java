@@ -1,4 +1,3 @@
-
 package io.github.some_example_name;
 
 import com.badlogic.gdx.Input;
@@ -82,13 +81,7 @@ public class Level2 implements Screen {
         retryTexture = new Texture("retry.png");
         retrySprite = new Sprite(retryTexture);
         retrySprite.setSize(1.4f*100,0.5f*100);
-        winTexture = new Texture("win.png");
-        winSprite = new Sprite(winTexture);
-        winSprite.setSize(1f*75,1f*43);
 
-        loseTexture = new Texture("lose.png");
-        loseSprite = new Sprite(loseTexture);
-        loseSprite.setSize(1f*75,1f*43);
 
         backTexture = new Texture("back.png");
         backSprite = new Sprite(backTexture);
@@ -175,11 +168,6 @@ public class Level2 implements Screen {
         Menu.setPosition(0.2f*100,4.1f*100);
         Menu.draw(spriteBatch);
 
-        winSprite.setPosition(2.7f*100,4f*100);
-        winSprite.draw(spriteBatch);
-
-        loseSprite.setPosition(3.7f*100,4f*100);
-        loseSprite.draw(spriteBatch);
 
         if (smallpig != null) {
             smallpig.setPos(5.8f * 100, 1.4f * 100);
@@ -211,8 +199,6 @@ public class Level2 implements Screen {
     }
     public void input(){
 
-        Rectangle winspriteBounds = winSprite.getBoundingRectangle();
-        Rectangle losespriteBounds = loseSprite.getBoundingRectangle();
         Rectangle nextLevelBounds = nextLevel.getBoundingRectangle();
         Rectangle retrySpriteBounds = retrySprite.getBoundingRectangle();
         Rectangle backSpriteBounds = backSprite.getBoundingRectangle();
@@ -234,16 +220,7 @@ public class Level2 implements Screen {
                     game.setScreen(new LevelMap_Resume(game, "night_resume.png"));
                 }
             }
-
-            if (winspriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                System.out.println("Mouse click is overlapping with the sprite!"+mousePos.x+"   "+mousePos.y);
-                winScreenDraw=1;
-
-            } else if (losespriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                System.out.println("Mouse click is overlapping with the sprite!"+mousePos.x+"   "+mousePos.y);
-                winScreenDraw=2;
-
-            } else if (MenuBounds.contains(mousePos.x,500-mousePos.y)){
+            if (MenuBounds.contains(mousePos.x,500-mousePos.y)){
                 game.setScreen(new Menu(this.game,1,this.theme));
 
             }
@@ -333,7 +310,8 @@ public class Level2 implements Screen {
 
                 // Progress to next bird or end game
                 if ( chuckBird == null && bombBird == null) {
-                    if (smallpig!=null || bigpig==null) {
+                    if (smallpig!=null || bigpig!=null) {
+                        winScreenDraw=2;
                         System.out.println("Birds are finished");
                     }
                 }
@@ -375,12 +353,12 @@ public class Level2 implements Screen {
     private void handleCollision(Object target) { // Use Object or a common superclass/interface
         if (target instanceof Pig) {
             Pig pig = (Pig) target;
-            pig.texture.dispose();
             if (pig == smallpig) {
                 smallpig = null;
                 System.out.println("Small Pig removed from the game.");
             } else if (pig == bigpig) {
                 if (pig.health==20) {
+                    pig.texture.dispose();
                     float posx = bigpig.posx;
                     float posy = bigpig.posy;
                     float sizex = bigpig.sizex;
@@ -390,7 +368,8 @@ public class Level2 implements Screen {
                     bigpig.setSize(sizex, sizey);
                     bigpig.health = 10;
                     System.out.println("Big Pig removed from the game.");
-                } else if (pig.health<=10){
+                } else if (pig.health==10 && nbdone==2){
+                    pig.texture.dispose();
                     bigpig=null;
                 }
             }
@@ -400,6 +379,22 @@ public class Level2 implements Screen {
             block.texture.dispose();
             if (block == woodOne) {
                 woodOne=null;
+                if (bigpig!=null){
+                    bigpig.health=10;
+                    float posx = bigpig.posx;
+                    float posy = bigpig.posy;
+                    float sizex = bigpig.sizex;
+                    float sizey = bigpig.sizey;
+                    bigpig.setTexture("jaitrikabroken.png");
+                    bigpig.setPos(posx, posy);
+                    bigpig.setSize(sizex, sizey);
+                }
+                if (woodTwo!=null){
+                    woodTwo=null;
+                }
+                if (smallpig!=null){
+                    smallpig=null;
+                }
                 System.out.println("Wood Block One removed from the game.");
             } else if (block == woodTwo) {
                 woodTwo = null;
@@ -408,7 +403,7 @@ public class Level2 implements Screen {
             // Similarly, handle other block types if any
         }
 
-        // **Do not stop the bird's movement upon collision**
+        // *Do not stop the bird's movement upon collision*
         // The bird will continue its trajectory until it hits the ground
     }
 
