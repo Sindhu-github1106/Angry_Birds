@@ -124,7 +124,7 @@ public class Level1 implements Screen {
 
 
         woodOne = new Block("stone",1);
-        woodOne.setTexture("stoone1.png");
+        woodOne.setTexture("glass1.png");
         woodOne.setSize(1f*150,1f*150);
         woodOne.health=2;
 
@@ -310,9 +310,17 @@ public class Level1 implements Screen {
 
                 currentBird = null;
                 isReleased = false;
+                if (smallpig==null){
+                    winScreenDraw=1;
+                }
 
                 // Progress to next bird or end game
                 if (redBird == null && bombBird == null) {
+                    if (smallpig== null){
+                        winScreenDraw=1;
+                    } else {
+                        winScreenDraw=2;
+                    }
                     System.out.println("Birds are finished");
                 }
             }
