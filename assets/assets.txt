@@ -29,6 +29,7 @@ halloween.png
 homeButtonImage.png
 homebutton.png
 jaitrika.png
+jaitrikabroken.png
 kingfullhealth.png
 kinginjured.png
 kingpiggie.png

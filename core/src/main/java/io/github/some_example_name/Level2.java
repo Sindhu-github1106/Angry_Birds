@@ -48,6 +48,7 @@ public class Level2 implements Screen {
     String theme;
     Sprite winSprite;
     Sprite loseSprite;
+    int nbdone=0;
 
     private Vector2 initialCatapultPosition;
     private float dragRadius;
@@ -126,6 +127,7 @@ public class Level2 implements Screen {
 
         bigpig = new Pig("big");
         bigpig.setTexture("jaitrika.png");
+        bigpig.health=20;
         bigpig.setSize(.75f*100,.75f*100);
 
         woodTwo = new Block("wood",2);
@@ -160,8 +162,10 @@ public class Level2 implements Screen {
         if (chuckBird != null) chuckBird.sprite.draw(spriteBatch);
         if (bombBird != null) bombBird.sprite.draw(spriteBatch);
 
-        bigpig.setPos(5.8f*98,2.35f*100);
-        bigpig.sprite.draw(spriteBatch);
+        if (bigpig != null) {
+            bigpig.setPos(5.8f * 98, 2.35f * 100);
+            bigpig.sprite.draw(spriteBatch);
+        }
         nextLevel.setPosition(3.3f*100,.8f*100);
         backSprite.setPosition(2.7f*100,.8f*100);
         retrySprite.setPosition(3.3f*100,.8f*100);
@@ -177,14 +181,20 @@ public class Level2 implements Screen {
         loseSprite.setPosition(3.7f*100,4f*100);
         loseSprite.draw(spriteBatch);
 
-        smallpig.setPos(5.8f*100,1.4f*100);
-        smallpig.sprite.draw(spriteBatch);
+        if (smallpig != null) {
+            smallpig.setPos(5.8f * 100, 1.4f * 100);
+            smallpig.sprite.draw(spriteBatch);
+        }
 
-        woodOne.setPos(5.5f*100,1.2f*100);
-        woodOne.sprite.draw(spriteBatch);
+        if (woodOne != null) {
+            woodOne.setPos(5.5f * 100, 1.2f * 100);
+            woodOne.sprite.draw(spriteBatch);
+        }
 
-        woodTwo.setPos(5.5f*100,2.18f*100);
-        woodTwo.sprite.draw(spriteBatch);
+        if (woodTwo != null) {
+            woodTwo.setPos(5.5f * 100, 2.18f * 100);
+            woodTwo.sprite.draw(spriteBatch);
+        }
         if (winScreenDraw==1) {
             winScreen.draw(spriteBatch);
             nextLevel.draw(spriteBatch);
@@ -254,6 +264,7 @@ public class Level2 implements Screen {
 
             if (selectedBird != null) {
                 currentBird = selectedBird;
+                nbdone++;
                 isBirdMovingToCatapult = true;
             }
         }
@@ -316,13 +327,106 @@ public class Level2 implements Screen {
                 currentBird = null;
                 isReleased = false;
 
+                if (smallpig==null && bigpig==null){
+                    winScreenDraw=1;
+                }
+
                 // Progress to next bird or end game
                 if ( chuckBird == null && bombBird == null) {
-                    System.out.println("Birds are finished");
+                    if (smallpig!=null || bigpig==null) {
+                        System.out.println("Birds are finished");
+                    }
                 }
             }
+            checkCollision();
         }
     }
+
+    private void checkCollision() {
+        if (currentBird == null) return; // No bird to check
+
+        Rectangle birdBounds = currentBird.sprite.getBoundingRectangle();
+
+        // Check collision with bigpig
+        if (bigpig != null && birdBounds.overlaps(bigpig.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Big Pig!");
+            handleCollision(bigpig);
+        }
+
+        // Check collision with smallpig
+        if (smallpig != null && birdBounds.overlaps(smallpig.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Small Pig!");
+            handleCollision(smallpig);
+        }
+
+        // Check collision with woodOne
+        if (woodOne != null && birdBounds.overlaps(woodOne.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Wood Block One!");
+            handleCollision(woodOne);
+        }
+
+        // Check collision with woodTwo
+        if (woodTwo != null && birdBounds.overlaps(woodTwo.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Wood Block Two!");
+            handleCollision(woodTwo);
+        }
+    }
+
+    private void handleCollision(Object target) { // Use Object or a common superclass/interface
+        if (target instanceof Pig) {
+            Pig pig = (Pig) target;
+            pig.texture.dispose();
+            if (pig == smallpig) {
+                smallpig = null;
+                System.out.println("Small Pig removed from the game.");
+            } else if (pig == bigpig) {
+                if (pig.health==20) {
+                    float posx = bigpig.posx;
+                    float posy = bigpig.posy;
+                    float sizex = bigpig.sizex;
+                    float sizey = bigpig.sizey;
+                    bigpig.setTexture("jaitrikabroken.png");
+                    bigpig.setPos(posx, posy);
+                    bigpig.setSize(sizex, sizey);
+                    bigpig.health = 10;
+                    System.out.println("Big Pig removed from the game.");
+                } else if (pig.health<=10){
+                    bigpig=null;
+                }
+            }
+            // Optionally, add score increment, play sound, etc.
+        } else if (target instanceof Block) {
+            Block block = (Block) target;
+            block.texture.dispose();
+            if (block == woodOne) {
+                woodOne=null;
+                System.out.println("Wood Block One removed from the game.");
+            } else if (block == woodTwo) {
+                woodTwo = null;
+                System.out.println("Wood Block Two removed from the game.");
+            }
+            // Similarly, handle other block types if any
+        }
+
+        // **Do not stop the bird's movement upon collision**
+        // The bird will continue its trajectory until it hits the ground
+    }
+
+    private void removeCurrentBird() {
+        if (currentBird == chuckBird) {
+            chuckBird.texture.dispose();
+            chuckBird = null;
+            System.out.println("Chuck Bird removed from the game.");
+        } else if (currentBird == bombBird) {
+            bombBird.texture.dispose();
+            bombBird = null;
+            System.out.println("Bomb Bird removed from the game.");
+        }
+
+        currentBird = null;
+        isReleased = false;
+    }
+
 
     @Override
     public void resize(int width, int height) {
@@ -343,6 +447,12 @@ public class Level2 implements Screen {
         spriteBatch.dispose();
         bg.dispose();
         ground.dispose();
+        if (chuckBird != null) chuckBird.texture.dispose();
+        if (bombBird != null) bombBird.texture.dispose();
+        if (bigpig != null) bigpig.texture.dispose();
+        if (smallpig != null) smallpig.texture.dispose();
+        if (woodOne != null) woodOne.texture.dispose();
+        if (woodTwo != null) woodTwo.texture.dispose();
+        if (catapult != null) catapult.texture.dispose();
     }
 }
-
