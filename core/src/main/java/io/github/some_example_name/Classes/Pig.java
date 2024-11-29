@@ -18,11 +18,11 @@ public class Pig{
 
     public Pig(String name){
         if (Objects.equals(name, "small")){
-            this.health=10;
+            this.health=1;
         } else if (Objects.equals(name, "big")){
-            this.health=20;
+            this.health=2;
         } else if (Objects.equals(name, "king")){
-            this.health=30;
+            this.health=3;
         }
     }
 
