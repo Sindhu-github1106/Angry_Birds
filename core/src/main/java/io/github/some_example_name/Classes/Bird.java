@@ -26,17 +26,17 @@ public class Bird {
         if (Objects.equals(name, "red")) {
             this.name = name;
             this.speed = 15;
-            this.damage = 15;
+            this.damage = 1;
             this.ability = "Extra Damage";
         } else if (Objects.equals(name, "bomb")) {
             this.name = name;
             this.speed = 10;
-            this.damage = 20;
+            this.damage = 2;
             this.ability = "Explode";
         } else if (Objects.equals(name, "chuck")) {
             this.name = name;
             this.speed = 25;
-            this.damage = 10;
+            this.damage = 3;
             this.ability = "Speed Boost";
         }
         this.velocity = new Vector2();
