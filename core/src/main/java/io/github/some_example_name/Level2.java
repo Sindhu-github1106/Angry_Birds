@@ -45,8 +45,7 @@ public class Level2 implements Screen {
     Sprite retrySprite;
     Sprite Menu;
     String theme;
-    Sprite winSprite;
-    Sprite loseSprite;
+
     int nbdone=0;
 
     private Vector2 initialCatapultPosition;
@@ -252,12 +251,10 @@ public class Level2 implements Screen {
             Vector2 offset = dragPosition.sub(center);
 
             if (isBirdMovingToCatapult) {
-                // Move bird to catapult position
                 float dx = (initialCatapultPosition.x - currentBird.posx) * 0.1f;
                 float dy = (initialCatapultPosition.y - currentBird.posy) * 0.1f;
                 currentBird.setPos(currentBird.posx + dx, currentBird.posy + dy);
 
-                // Check if bird has reached catapult position
                 if (Math.abs(currentBird.posx - initialCatapultPosition.x) < 1 &&
                     Math.abs(currentBird.posy - initialCatapultPosition.y) < 1) {
                     isBirdMovingToCatapult = false;
@@ -288,9 +285,8 @@ public class Level2 implements Screen {
             currentBird.setPos(currentBird.posx + currentBird.velocity.x * delta,
                 currentBird.posy + currentBird.velocity.y * delta);
 
-            // Check if bird hits ground
             if (currentBird.posy <= 122) {
-                // Remove current bird
+
                 if (currentBird == chuckBird) {
                     chuckBird.texture.dispose();
                     chuckBird = null;
@@ -308,7 +304,6 @@ public class Level2 implements Screen {
                     winScreenDraw=1;
                 }
 
-                // Progress to next bird or end game
                 if ( chuckBird == null && bombBird == null) {
                     if (smallpig!=null || bigpig!=null) {
                         winScreenDraw=2;
@@ -321,36 +316,32 @@ public class Level2 implements Screen {
     }
 
     private void checkCollision() {
-        if (currentBird == null) return; // No bird to check
+        if (currentBird == null) return;
 
         Rectangle birdBounds = currentBird.sprite.getBoundingRectangle();
 
-        // Check collision with bigpig
         if (bigpig != null && birdBounds.overlaps(bigpig.sprite.getBoundingRectangle())) {
             System.out.println("Collision with Big Pig!");
             handleCollision(bigpig);
         }
 
-        // Check collision with smallpig
         if (smallpig != null && birdBounds.overlaps(smallpig.sprite.getBoundingRectangle())) {
             System.out.println("Collision with Small Pig!");
             handleCollision(smallpig);
         }
 
-        // Check collision with woodOne
         if (woodOne != null && birdBounds.overlaps(woodOne.sprite.getBoundingRectangle())) {
             System.out.println("Collision with Wood Block One!");
             handleCollision(woodOne);
         }
 
-        // Check collision with woodTwo
         if (woodTwo != null && birdBounds.overlaps(woodTwo.sprite.getBoundingRectangle())) {
             System.out.println("Collision with Wood Block Two!");
             handleCollision(woodTwo);
         }
     }
 
-    private void handleCollision(Object target) { // Use Object or a common superclass/interface
+    private void handleCollision(Object target) {
         if (target instanceof Pig) {
             Pig pig = (Pig) target;
             if (pig == smallpig) {
@@ -373,7 +364,6 @@ public class Level2 implements Screen {
                     bigpig=null;
                 }
             }
-            // Optionally, add score increment, play sound, etc.
         } else if (target instanceof Block) {
             Block block = (Block) target;
             block.texture.dispose();
@@ -400,11 +390,9 @@ public class Level2 implements Screen {
                 woodTwo = null;
                 System.out.println("Wood Block Two removed from the game.");
             }
-            // Similarly, handle other block types if any
+
         }
 
-        // *Do not stop the bird's movement upon collision*
-        // The bird will continue its trajectory until it hits the ground
     }
 
     private void removeCurrentBird() {
