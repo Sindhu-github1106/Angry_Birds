@@ -18,6 +18,17 @@ public class Block{
         this.number=size;
         this.type=name;
     }
+    public void assign_health(Block block){
+        if(block.type.equals("wood")){
+            block.health=1;
+        }
+        else if(block.type.equals("glass")){
+            block.health=2;
+        }
+        else if(block.type.equals("stone")){
+            block.health=3;
+        }
+    }
 
     public void setPos(float posx,float posy){
         this.posx=posx;
@@ -34,11 +45,5 @@ public class Block{
     public void setTexture(String s){
         this.texture= new Texture(s);
         this.sprite= new Sprite(this.texture);
-    }
-
-    public void dispose() {
-        if (sprite.getTexture() != null) {
-            sprite.getTexture().dispose();
-        }
     }
 }
