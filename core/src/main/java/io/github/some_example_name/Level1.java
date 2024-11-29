@@ -22,21 +22,19 @@ public class Level1 implements Screen {
     private final Game game;
     private SpriteBatch spriteBatch;
     private FitViewport viewport;
-    int winScreenDraw = 0;
+    private int gameState = 0; // 0 = playing, 1 = win, 2 = lose
     private Texture bg;
     private Texture ground;
-    private Texture loseScreenTexture;
     private Texture winScreenTexture;
+    private Texture loseScreenTexture;
     private Texture nextLevelTexture;
     private Texture backTexture;
     private Texture retryTexture;
     private Texture MenuTexture;
-    private Texture winTexture;
-    private Texture loseTexture;
     private Bird redBird, bombBird;
     private Bird currentBird;
     private Catapult catapult;
-    Block woodOne;
+    Block glassOne;
     Pig smallpig;
     Sprite winScreen;
     Sprite loseScreen;
@@ -44,10 +42,7 @@ public class Level1 implements Screen {
     Sprite backSprite;
     Sprite retrySprite;
     Sprite Menu;
-    String theme;
-    Sprite winSprite;
-    Sprite loseSprite;
-    int nbdone=0;
+    public String theme;
 
     private Vector2 initialCatapultPosition;
     private float dragRadius;
@@ -69,33 +64,54 @@ public class Level1 implements Screen {
         this.dragRadius = 50;
     }
 
+    public String getLevelMapStartTheme(String theme) {
+        String map_theme = "";
+        if (theme.equals("night.jpg")) {
+            map_theme = "night.png";
+        } else if (theme.equals("bg.jpg")) {
+            map_theme = "day.png";
+        } else if (theme.equals("halloween.jpg")) {
+            map_theme = "spooky.png";
+        }
+        return map_theme;
+    }
+    public String getLevelMapResumeTheme(String theme){
+        String map_theme = "";
+        if (theme.equals("night.jpg")){
+            map_theme="night_resume.png";
+        }
+        else if(theme.equals("bg.jpg")){
+            map_theme="day_resume.png";
+        }
+        else if(theme.equals("halloween.jpg")){
+            map_theme="spooky_resume.png";
+        }
+        return map_theme;
+    }
+
+
     @Override
     public void show() {
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 500);
         ground = new Texture("ground.jpg");
+
         nextLevelTexture = new Texture("nextlevel.png");
         nextLevel = new Sprite(nextLevelTexture);
         nextLevel.setSize(1.4f*100,0.5f*100);
-
-        retryTexture = new Texture("retry.png");
-        retrySprite = new Sprite(retryTexture);
-        retrySprite.setSize(1.4f*100,0.5f*100);
-        winTexture = new Texture("win.png");
-        winSprite = new Sprite(winTexture);
-        winSprite.setSize(1f*75,1f*43);
-
-        loseTexture = new Texture("lose.png");
-        loseSprite = new Sprite(loseTexture);
-        loseSprite.setSize(1f*75,1f*43);
 
         backTexture = new Texture("back.png");
         backSprite = new Sprite(backTexture);
         backSprite.setSize(0.5f*100,0.5f*100);
 
+        retryTexture = new Texture("retry.png");
+        retrySprite = new Sprite(retryTexture);
+        retrySprite.setSize(1.4f*100,0.5f*100);
+
         MenuTexture = new Texture("menu.png");
-        Menu= new Sprite(MenuTexture);
+        Menu = new Sprite(MenuTexture);
         Menu.setSize(0.7f*100,0.7f*100);
+
         winScreenTexture = new Texture("winoverlay.png");
         winScreen = new Sprite(winScreenTexture);
         winScreen.setSize(2.5f*100,3.5f*100);
@@ -103,6 +119,8 @@ public class Level1 implements Screen {
         loseScreenTexture = new Texture("loseoverlay.png");
         loseScreen = new Sprite(loseScreenTexture);
         loseScreen.setSize(4f*100,3.5f*100);
+
+        // Initialize birds, catapult, blocks, and pigs
         redBird = new Bird("red");
         redBird.setTexture("birdred.png");
         redBird.setSize(50.0f, 50.0f);
@@ -118,20 +136,20 @@ public class Level1 implements Screen {
         catapult.setSize(75.0f, 150.0f);
         catapult.setPos(1f * 100, 1.20f * 100);
 
-        this.smallpig = new Pig("small");
-        this.smallpig.setTexture("small.png");
-        this.smallpig.setSize(.40f*100,.40f*100);
+        smallpig = new Pig("small");
+        smallpig.setTexture("small.png");
+        smallpig.setSize(.40f*100,.40f*100);
 
-
-        woodOne = new Block("stone",1);
-        woodOne.setTexture("glass1.png");
-        woodOne.setSize(1f*150,1f*150);
-        woodOne.health=2;
+        glassOne = new Block("glass",1);
+        glassOne.setTexture("glass1.png");
+        glassOne.setSize(1f*150,1f*150);
+        glassOne.health=2;
 
         currentBird = null;
         isReleased = false;
         isBirdMovingToCatapult = false;
     }
+
     public void change(){
         game.setScreen(new Level2(this.game,theme));
     }
@@ -143,58 +161,132 @@ public class Level1 implements Screen {
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
 
+        // Draw background and ground
         spriteBatch.draw(bg, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         spriteBatch.draw(ground, 0, 0, viewport.getWorldWidth(), 122);
 
+        // Draw game objects
         catapult.sprite.draw(spriteBatch);
 
         if (redBird != null) redBird.sprite.draw(spriteBatch);
         if (bombBird != null) bombBird.sprite.draw(spriteBatch);
 
-
-        nextLevel.setPosition(3.3f*100,.8f*100);
-        backSprite.setPosition(2.7f*100,.8f*100);
-        retrySprite.setPosition(3.3f*100,.8f*100);
-
-        winScreen.setPosition(2.5f*100,1f*100);
-        loseScreen.setPosition(2f*100,1f*100);
-        Menu.setPosition(0.2f*100,4.1f*100);
-        Menu.draw(spriteBatch);
-
-        winSprite.setPosition(2.7f*100,4f*100);
-        winSprite.draw(spriteBatch);
-
-        loseSprite.setPosition(3.7f*100,4f*100);
-        loseSprite.draw(spriteBatch);
-
         if (smallpig != null) {
-            smallpig.setPos(5.8f * 105, 1.4f * 108);
+            smallpig.setPos(5.8f*105,1.4f*108);
             smallpig.sprite.draw(spriteBatch);
         }
 
-        if (woodOne != null) {
-            woodOne.setPos(5.5f * 100, 1.2f * 100);
-            woodOne.sprite.draw(spriteBatch);
+        if (glassOne != null) {
+            glassOne.setPos(5.5f*100,1.2f*100);
+            glassOne.sprite.draw(spriteBatch);
         }
 
-        if (winScreenDraw==1) {
+        Menu.setPosition(0.2f*100,4.1f*100);
+        Menu.draw(spriteBatch);
+
+        if (gameState == 1) {
+            winScreen.setPosition(2.5f*100,1f*100);
             winScreen.draw(spriteBatch);
+            nextLevel.setPosition(3.3f*100,.8f*100);
             nextLevel.draw(spriteBatch);
+            backSprite.setPosition(2.7f*100,.8f*100);
             backSprite.draw(spriteBatch);
-        } else if (winScreenDraw==2){
+        } else if (gameState == 2) { // Lose state
+            loseScreen.setPosition(2f*100,1f*100);
             loseScreen.draw(spriteBatch);
+            retrySprite.setPosition(3.3f*100,.8f*100);
             retrySprite.draw(spriteBatch);
+            backSprite.setPosition(2.7f*100,.8f*100);
             backSprite.draw(spriteBatch);
         }
+
         spriteBatch.end();
+
         input();
         handleInput();
         updateBirdPosition(delta);
+        checkCollisions();
+        checkGameState();
     }
-    public void input(){
+    private void checkCollisions() {
+        if (currentBird == null || !isReleased) return;
 
-        Rectangle winspriteBounds = winSprite.getBoundingRectangle();
-        Rectangle losespriteBounds = loseSprite.getBoundingRectangle();
+        Rectangle birdBounds = currentBird.sprite.getBoundingRectangle();
+
+        if (glassOne != null) {
+            Rectangle glassOneBounds = glassOne.sprite.getBoundingRectangle();
+            if (birdBounds.overlaps(glassOneBounds)) {
+                if (glassOne.health == 2 && currentBird == redBird) {
+                    glassOne.health -= 1; // Reduce health to 1
+                    glassOne.setTexture("glass1broken.png"); // Change texture to broken glass
+                    currentBird.damage -= 1; // Use up red bird's damage
+
+                    // Destroy red bird since its damage is used up
+                    destroyBird();
+                }
+                // If glass block has 1 health and bomb bird hits it
+                else if (glassOne.health == 1 && currentBird == bombBird) {
+                    glassOne.health -= 1; // Reduce health to 0
+                    glassOne.texture.dispose(); // Dispose of texture
+                    glassOne = null; // Remove glass block
+                    currentBird.damage -= 1; // Use up one damage
+
+                    // If bomb bird used both its damages, destroy it
+                    if (currentBird.damage <= 0) {
+                        destroyBird();
+                    }
+                }
+                // If glass block has 2 health and bomb bird hits it
+                else if (glassOne.health == 2 && currentBird == bombBird) {
+                    glassOne.health -= 2; // Directly reduce to 0
+                    glassOne.texture.dispose(); // Dispose of texture
+                    glassOne = null; // Remove glass block
+                    destroyBird(); // Destroy bomb bird since it used both damages
+                }
+            }
+        }
+
+        if (smallpig != null && (glassOne == null)) {
+            Rectangle pigBounds = smallpig.sprite.getBoundingRectangle();
+            if (birdBounds.overlaps(pigBounds)) {
+                // Reduce pig health based on bird damage
+                smallpig.health -= currentBird.damage;
+
+                // Destroy pig if its health reaches 0
+                if (smallpig.health <= 0) {
+                    smallpig.texture.dispose();
+                    smallpig = null;
+                }
+
+                // Destroy bird
+                destroyBird();
+            }
+        }
+    }
+    private void checkGameState() {
+        // Win condition: all pigs destroyed
+        if (smallpig == null) {
+            gameState = 1;
+        }
+        // Lose condition: all birds used and pig still alive
+        else if ((redBird == null && bombBird == null)) {
+            gameState = 2;
+        }
+    }
+    private void destroyBird() {
+        if (currentBird == redBird) {
+            redBird.texture.dispose();
+            redBird = null;
+        } else if (currentBird == bombBird) {
+            bombBird.texture.dispose();
+            bombBird = null;
+        }
+        currentBird = null;
+        isReleased = false;
+    }
+
+
+    public void input() {
         Rectangle nextLevelBounds = nextLevel.getBoundingRectangle();
         Rectangle retrySpriteBounds = retrySprite.getBoundingRectangle();
         Rectangle backSpriteBounds = backSprite.getBoundingRectangle();
@@ -203,31 +295,24 @@ public class Level1 implements Screen {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 
-            if (winScreenDraw==1){
-                if (nextLevelBounds.contains(mousePos.x, 500-mousePos.y)){
-                    game.setScreen(new Level2(this.game,theme));
+            if (gameState == 1) {
+                if (nextLevelBounds.contains(mousePos.x, 500-mousePos.y)) {
+                    game.setScreen(new Level2(this.game, theme));
                 } else if (backSpriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                    game.setScreen(new LevelMap_Resume(game, "night_resume.png"));
+                    String them = getLevelMapResumeTheme(String.valueOf(this.bg));
+                    game.setScreen(new LevelMap_Resume(game, them));
                 }
-            } else if (winScreenDraw==2) {
-                if (retrySpriteBounds.contains(mousePos.x, 500-mousePos.y)){
-                    game.setScreen(new Level1(this.game,this.theme));
+            } else if (gameState == 2) {
+                if (retrySpriteBounds.contains(mousePos.x, 500-mousePos.y)) {
+                    game.setScreen(new Level1(this.game, this.theme));
                 } else if (backSpriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                    game.setScreen(new LevelMap_Start(game, "night_resume.png"));
+                    String them_2 = getLevelMapStartTheme(String.valueOf(this.bg));
+                    game.setScreen(new LevelMap_Start(game, them_2));
                 }
             }
 
-            if (winspriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                System.out.println("Mouse click is overlapping with the sprite!"+mousePos.x+"   "+mousePos.y);
-                winScreenDraw=1;
-
-            } else if (losespriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                System.out.println("Mouse click is overlapping with the sprite!"+mousePos.x+"   "+mousePos.y);
-                winScreenDraw=2;
-
-            } else if (MenuBounds.contains(mousePos.x,500-mousePos.y)){
-                game.setScreen(new Menu(this.game,1,this.theme));
-
+            if (MenuBounds.contains(mousePos.x, 500-mousePos.y)) {
+                game.setScreen(new Menu(this.game, 1, this.theme));
             }
         }
     }
@@ -236,7 +321,7 @@ public class Level1 implements Screen {
         viewport.getCamera().unproject(touchPos);
 
         if (Gdx.input.justTouched() && currentBird == null && !isBirdMovingToCatapult) {
-            // Bird selection
+
             Bird selectedBird = null;
             if (redBird != null && redBird.sprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
                 selectedBird = redBird;
@@ -247,8 +332,6 @@ public class Level1 implements Screen {
 
             if (selectedBird != null) {
                 currentBird = selectedBird;
-                nbdone++;
-                System.out.println(currentBird.name+nbdone);
                 isBirdMovingToCatapult = true;
             }
         }
@@ -259,12 +342,10 @@ public class Level1 implements Screen {
             Vector2 offset = dragPosition.sub(center);
 
             if (isBirdMovingToCatapult) {
-                // Move bird to catapult position
                 float dx = (initialCatapultPosition.x - currentBird.posx) * 0.1f;
                 float dy = (initialCatapultPosition.y - currentBird.posy) * 0.1f;
                 currentBird.setPos(currentBird.posx + dx, currentBird.posy + dy);
 
-                // Check if bird has reached catapult position
                 if (Math.abs(currentBird.posx - initialCatapultPosition.x) < 1 &&
                     Math.abs(currentBird.posy - initialCatapultPosition.y) < 1) {
                     isBirdMovingToCatapult = false;
@@ -295,9 +376,7 @@ public class Level1 implements Screen {
             currentBird.setPos(currentBird.posx + currentBird.velocity.x * delta,
                 currentBird.posy + currentBird.velocity.y * delta);
 
-            // Check if bird hits ground
             if (currentBird.posy <= 122) {
-                // Remove current bird
                 if (currentBird == redBird) {
                     redBird.texture.dispose();
                     redBird = null;
@@ -310,95 +389,12 @@ public class Level1 implements Screen {
 
                 currentBird = null;
                 isReleased = false;
-                if (smallpig==null){
-                    winScreenDraw=1;
-                }
 
-                // Progress to next bird or end game
                 if (redBird == null && bombBird == null) {
-                    if (smallpig== null){
-                        winScreenDraw=1;
-                    } else {
-                        winScreenDraw=2;
-                    }
                     System.out.println("Birds are finished");
                 }
             }
-            checkCollision();
         }
-    }
-
-    void checkCollision() {
-        if (currentBird == null) return; // No bird to check
-
-        Rectangle birdBounds = currentBird.sprite.getBoundingRectangle();
-
-        // Check collision with smallpig
-        if (smallpig != null && birdBounds.overlaps(smallpig.sprite.getBoundingRectangle())) {
-            System.out.println("Collision with Small Pig!");
-            handleCollision(smallpig);
-        }
-
-        // Check collision with woodOne
-        if (woodOne != null && birdBounds.overlaps(woodOne.sprite.getBoundingRectangle())) {
-            System.out.println("Collision with Wood Block One!");
-
-            handleCollision(woodOne);
-        }
-    }
-
-    void handleCollision(Object target) { // Use Object or a common superclass/interface
-        if (target instanceof Pig) {
-            Pig pig = (Pig) target;
-            pig.texture.dispose();
-            if (pig == smallpig) {
-                smallpig = null;
-                System.out.println("Small Pig removed from the game.");
-            }
-            // Optionally, add score increment, play sound, etc.
-        } else if (target instanceof Block) {
-            Block block = (Block) target;
-
-            if (block == woodOne) {
-                if (block.health==2) {
-                    float posx = woodOne.posx;
-                    float posy = woodOne.posy;
-                    float sizex = woodOne.sizex;
-                    float sizey = woodOne.sizey;
-                    woodOne.setTexture("glass1broken.png");
-                    woodOne.setPos(posx, posy);
-                    woodOne.setSize(sizex, sizey);
-                    woodOne.health = 1;
-                    System.out.println("Wood Block One removed from the game.");
-                }
-                if (block.health==1 && nbdone==2){
-                    block.texture.dispose();
-                    woodOne=null;
-                }
-//                } else {
-//                    woodOne=null;
-//                }
-            }
-            // Similarly, handle other block types if any
-        }
-
-        // **Do not stop the bird's movement upon collision**
-        // The bird will continue its trajectory until it hits the ground
-    }
-
-    private void removeCurrentBird() {
-        if (currentBird == redBird) {
-            redBird.texture.dispose();
-            redBird = null;
-            System.out.println("Red Bird removed from the game.");
-        } else if (currentBird == bombBird) {
-            bombBird.texture.dispose();
-            bombBird = null;
-            System.out.println("Bomb Bird removed from the game.");
-        }
-
-        currentBird = null;
-        isReleased = false;
     }
 
     @Override
@@ -418,12 +414,7 @@ public class Level1 implements Screen {
     @Override
     public void dispose() {
         spriteBatch.dispose();
-        bg.dispose();
-        ground.dispose();
-        if (redBird != null) redBird.texture.dispose();
-        if (bombBird != null) bombBird.texture.dispose();
-        if (smallpig != null) smallpig.texture.dispose();
-        if (woodOne != null) woodOne.texture.dispose();
-        if (catapult != null) catapult.texture.dispose();
+        if (bg != null) bg.dispose();
+        if (ground != null) ground.dispose();
     }
 }
