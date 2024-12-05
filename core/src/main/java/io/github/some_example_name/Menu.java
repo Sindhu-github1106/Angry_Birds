@@ -9,6 +9,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Menu implements Screen {
     private final Game game;
     private final SpriteBatch batch;
@@ -63,7 +68,21 @@ public class Menu implements Screen {
                 }
 
                 if (saveAndExitRectangle.contains(screenX, newY)) {
-                    //game.dispose();
+                    try {
+                        FileWriter fwrite = new FileWriter("ResumeLevel.txt");
+                        if (currentlevel==1) {
+                            fwrite.write("1");
+                        } else if (currentlevel==2){
+                            fwrite.write("2");
+                        } else if (currentlevel==3) {
+                            fwrite.write("3");
+                        }
+                        fwrite.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Gdx.app.exit();
                 }
 
                 return false;
