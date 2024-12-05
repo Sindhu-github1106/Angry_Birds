@@ -11,87 +11,174 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class HomeScreen implements Screen {
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class ThemeChoose implements Screen {
     private final Game game;
     private final SpriteBatch batch;
     private Texture backgroundImage;
-    private Texture musicIcon;
-    private Texture startButtonImage;
-    private Texture resumeButtonImage;
-    private Circle musicIconCircle;
-    private Rectangle startNewGameRectangle;
-    private Rectangle resumeGameRectangle;
+    private Texture night_themeImage;
+    private Texture day_themeImage;
+    private Texture halloween_themeImage;
+    private Rectangle themenightRectangle;
+    private Rectangle themedayRectangle;
+    private Rectangle themehalloweenRectangle;
+    private String selectedTheme;
+    private Texture homeButtonImage;
+    private Circle speakerCircle;
+    private Rectangle homeButtonRectangle;
+    private Texture backgroundMusicImage;
     private Music backgroundMusic;
-    private Texture[] storySlides;  // array of textures containing story slide images
-    private int currentSlide = -1;// current slide index
-    public boolean resume;
+    private boolean resumeMode;
 
-    public HomeScreen(Game game) {
+    public ThemeChoose(Game game, boolean resumeMode) {
         this.game = game;
         this.batch = ((Main) game).getBatch();
+        this.resumeMode = resumeMode;
     }
 
     @Override
     public void show() {
+        backgroundImage = new Texture("theme_background.png");
+        night_themeImage = new Texture("night_theme.png");
+        day_themeImage = new Texture("day_theme.png");
+        halloween_themeImage =new Texture("spooky_theme.png");
+        backgroundMusicImage = new Texture("download2.png"); // 50*50
+        homeButtonImage = new Texture("homebutton.png");
 
-        backgroundImage = new Texture("bgm.png");
-        musicIcon = new Texture("download2.png");
-        startButtonImage = new Texture("startt.png");
-        resumeButtonImage = new Texture("resumee.png");
-
-        storySlides = new Texture[]{new Texture("story_slide_1.png"), new Texture("story_slide_2.png"), new Texture("story_slide_3.png"), new Texture("story_slide_4.png")};
-        musicIconCircle = new Circle(55, 452, 22.5f);
-        startNewGameRectangle = new Rectangle(185, 65, 180, 50);
-        resumeGameRectangle = new Rectangle(435, 65, 180, 50);
-
+        speakerCircle = new Circle(120, 455, 22.5f);
+        homeButtonRectangle = new Rectangle(18.2F, 418.8F, 70, 70);
+        themenightRectangle = new Rectangle(50, 15.6F, 216, 383);
+        themedayRectangle = new Rectangle(292, 15.6F, 216, 383);
+        themehalloweenRectangle=new Rectangle(533.6F, 15.6F, 216, 383);
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm.mp3"));
-        backgroundMusic.setLooping(true); // music loop
-
+        backgroundMusic.setLooping(true);
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                float newy = 500 - screenY;
-
-                if (musicIconCircle.contains(screenX, newy)) {
+                float adjustedY = 500 - screenY;
+                if (speakerCircle.contains(screenX, adjustedY)) {
                     ((Main) game).getMusicManager().toggleMusic();
                     return true;
                 }
-                if (currentSlide == -1) {  // home screen
-                    if (startNewGameRectangle.contains(screenX, newy)) {
-                        currentSlide = 0;// start the story slides
-                        resume=false;
-                    }
-                    if (resumeGameRectangle.contains(screenX, newy)) {
-                        resume=true;
-                        game.setScreen(new ThemeChoose(game,resume));
-                    }
-                } else {  //in the story slides
-                    currentSlide++;//next slide
-                    if (currentSlide >= storySlides.length) {
-                        game.setScreen(new ThemeChoose(game, resume));
-                        return true;
-                    }
+                if (homeButtonRectangle.contains(screenX, adjustedY)) {
+                    game.setScreen(new HomeScreen(game));
+
+                    return true;
                 }
-                return true;
+
+                if (themenightRectangle.contains(screenX, adjustedY)) {
+                    selectedTheme="night.png";
+                    if (resumeMode) {
+                        try (BufferedReader reader = new BufferedReader(new FileReader("ResumeLevel.txt"))){
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                String[] parts = line.split("");
+                                if (parts[0].equals("1")){
+                                    game.setScreen(new LevelMap_Start(game, selectedTheme));
+                                } else if (parts[0].equals("2")) {
+                                    game.setScreen(new LevelMap_Resume(game, "night_resume.png"));
+                                } else if (parts[0].equals("3")) {
+                                    game.setScreen(new LevelMap_l3unclocked(game, selectedTheme));
+                                }
+                            }
+
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    } else {
+                        try {
+                            FileWriter fwrite = new FileWriter("GameState.txt");
+                            fwrite.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        game.setScreen(new LevelMap_Start(game, selectedTheme));
+                    }
+                    return true;
+                } else if (themedayRectangle.contains(screenX, adjustedY)) {
+                    selectedTheme = "day.png";
+                    if (resumeMode) {
+                        try (BufferedReader reader = new BufferedReader(new FileReader("ResumeLevel.txt"))){
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                String[] parts = line.split("");
+                                if (parts[0].equals("1")){
+                                    game.setScreen(new LevelMap_Start(game, selectedTheme));
+                                } else if (parts[0].equals("2")) {
+                                    game.setScreen(new LevelMap_Resume(game, "day_resume.png"));
+                                } else if (parts[0].equals("3")) {
+                                    game.setScreen(new LevelMap_l3unclocked(game, selectedTheme));
+                                }
+                            }
+
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    } else {
+                        try {
+                            FileWriter fwrite = new FileWriter("GameState.txt");
+                            fwrite.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        game.setScreen(new LevelMap_Start(game, selectedTheme));
+                    }
+                    return true;
+                } else if (themehalloweenRectangle.contains(screenX, adjustedY)) {
+                    selectedTheme = "spooky.png";
+                    if (resumeMode) {
+
+                        try (BufferedReader reader = new BufferedReader(new FileReader("ResumeLevel.txt"))){
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                String[] parts = line.split("");
+                                if (parts[0].equals("1")){
+                                    game.setScreen(new LevelMap_Start(game, selectedTheme));
+                                } else if (parts[0].equals("2")) {
+                                    game.setScreen(new LevelMap_Resume(game,"spooky_resume.png"));
+                                } else if (parts[0].equals("3")) {
+                                    game.setScreen(new LevelMap_l3unclocked(game, selectedTheme));
+                                }
+                            }
+
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        try {
+                            FileWriter fwrite = new FileWriter("GameState.txt");
+                            fwrite.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        game.setScreen(new LevelMap_Start(game, selectedTheme));
+                    }
+                    return true;
+                }
+
+                return false;
             }
         });
     }
-
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(1, 1, 1, 1);
 
         batch.begin();
-        if (currentSlide == -1) {
+        batch.draw(backgroundImage, 0, 0, 800, 500);
+        batch.draw(night_themeImage, themenightRectangle.x,themenightRectangle.y,themenightRectangle.width,themenightRectangle.height);
+        batch.draw(day_themeImage, themedayRectangle.x,themedayRectangle.y,themedayRectangle.width,themedayRectangle.height);
+        batch.draw(halloween_themeImage, themehalloweenRectangle.x,themehalloweenRectangle.y,themehalloweenRectangle.width,themehalloweenRectangle.height);
+        batch.draw(homeButtonImage,homeButtonRectangle.x, homeButtonRectangle.y, homeButtonRectangle.width, homeButtonRectangle.height);
+        batch.draw(backgroundMusicImage, speakerCircle.x - 25, speakerCircle.y - 25, 50, 50);
 
-            batch.draw(backgroundImage, 0, 0, 800, 500);
-            batch.draw(musicIcon, 30, 426, 50, 50);
-            batch.draw(startButtonImage, startNewGameRectangle.x, startNewGameRectangle.y, startNewGameRectangle.width, startNewGameRectangle.height);
-            batch.draw(resumeButtonImage, resumeGameRectangle.x, resumeGameRectangle.y, resumeGameRectangle.width, resumeGameRectangle.height);
-        } else {
-            batch.draw(storySlides[currentSlide], 0, 0, 800, 500);
-        }
         batch.end();
     }
 
@@ -110,12 +197,11 @@ public class HomeScreen implements Screen {
     @Override
     public void dispose() {
         backgroundImage.dispose();
-        musicIcon.dispose();
-        startButtonImage.dispose();
-        resumeButtonImage.dispose();
+        night_themeImage.dispose();
+        day_themeImage.dispose();
+        halloween_themeImage.dispose();
         backgroundMusic.dispose();
-        for (Texture slide : storySlides) {
-            slide.dispose();
-        }
+        backgroundMusicImage.dispose();
+        homeButtonImage.dispose();
     }
 }
