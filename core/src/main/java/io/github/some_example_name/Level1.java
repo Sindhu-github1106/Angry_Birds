@@ -1,5 +1,8 @@
 package io.github.some_example_name;
 import com.badlogic.gdx.Input;
+
+import java.io.*;
+
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import io.github.some_example_name.Classes.Bird;
@@ -17,6 +20,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import io.github.some_example_name.Classes.Pig;
 
+import java.io.FileWriter;
+
 public class Level1 implements Screen {
     private final Game game;
     private SpriteBatch spriteBatch;
@@ -30,22 +35,33 @@ public class Level1 implements Screen {
     private Texture backTexture;
     private Texture retryTexture;
     private Texture MenuTexture;
-    private Bird redBird, bombBird;
+    private Texture menuboxImage;
+    private Texture resumeGameImage;
+    private Texture homeButtonImage;
+    private Texture saveAndExitImage;
+    private Rectangle resumeButtonRectangle;
+    private Rectangle homeButtonRectangle;
+    private Rectangle saveAndExitRectangle;
+    public Bird redBird;
+    private Bird bombBird;
     private Bird currentBird;
     private Catapult catapult;
-    Block glassOne;
+    public Block glassOne;
     Pig smallpig;
     Sprite winScreen;
     Sprite loseScreen;
     Sprite nextLevel;
     Sprite backSprite;
     Sprite retrySprite;
-    Sprite Menu;
+    Sprite menuButton;
     public String theme;
     private Vector2 initialCatapultPosition;
     private float dragRadius;
-    private boolean isReleased;
+    public boolean isReleased;
     private boolean isBirdMovingToCatapult;
+    private boolean isMenu = false;
+    int nbdone=0;
+    String donebird = null;
     public Level1(Game game, String s) {
         this.game = game;
         if (s.equals("night.png") || s.equals("night_resume.png")) {
@@ -103,8 +119,8 @@ public class Level1 implements Screen {
         retrySprite.setSize(1.4f*100,0.5f*100);
 
         MenuTexture = new Texture("menu.png");
-        Menu = new Sprite(MenuTexture);
-        Menu.setSize(0.7f*100,0.7f*100);
+        menuButton = new Sprite(MenuTexture);
+        menuButton.setSize(0.5f*100,0.5f*100);
 
         winScreenTexture = new Texture("winoverlay.png");
         winScreen = new Sprite(winScreenTexture);
@@ -142,6 +158,29 @@ public class Level1 implements Screen {
         currentBird = null;
         isReleased = false;
         isBirdMovingToCatapult = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("GameState.txt"))){
+            String line;
+            while ((line = reader.readLine()) != null){
+                String[] parts = line.split(" ");
+                if (parts.length == 3){
+                    glassOne=null;
+                    if (parts[0].equals("bomb")){
+                        bombBird=null;
+                    } else {
+                        redBird = null;
+                    }
+                } else if (parts.length==2){
+                    if (parts[0].equals("bomb")){
+                        bombBird=null;
+                    } else {
+                        redBird = null;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void change(){
@@ -175,8 +214,8 @@ public class Level1 implements Screen {
             glassOne.sprite.draw(spriteBatch);
         }
 
-        Menu.setPosition(0.2f*100,4.1f*100);
-        Menu.draw(spriteBatch);
+        menuButton.setPosition(7.2f*100,4.1f*100);
+        menuButton.draw(spriteBatch);
 
         if (gameState == 1) {
             winScreen.setPosition(2.5f*100,1f*100);
@@ -192,6 +231,13 @@ public class Level1 implements Screen {
             retrySprite.draw(spriteBatch);
             backSprite.setPosition(2.7f*100,.8f*100);
             backSprite.draw(spriteBatch);
+        }
+
+        if (isMenu==true){
+            spriteBatch.draw(menuboxImage, 66.9F, 50F, 668, 400);
+            spriteBatch.draw(resumeGameImage, resumeButtonRectangle.x, resumeButtonRectangle.y,resumeButtonRectangle.width, resumeButtonRectangle.height);
+            spriteBatch.draw(homeButtonImage, homeButtonRectangle.x, homeButtonRectangle.y, homeButtonRectangle.width, homeButtonRectangle.height);
+            spriteBatch.draw(saveAndExitImage, saveAndExitRectangle.x, saveAndExitRectangle.y, saveAndExitRectangle.width, saveAndExitRectangle.height);
         }
 
         spriteBatch.end();
@@ -284,10 +330,29 @@ public class Level1 implements Screen {
         Rectangle nextLevelBounds = nextLevel.getBoundingRectangle();
         Rectangle retrySpriteBounds = retrySprite.getBoundingRectangle();
         Rectangle backSpriteBounds = backSprite.getBoundingRectangle();
-        Rectangle MenuBounds = Menu.getBoundingRectangle();
+        Rectangle menuBounds = menuButton.getBoundingRectangle();
 
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+
+            if (menuBounds.contains(mousePos.x, 500-mousePos.y)) {
+                try {
+                    FileWriter fwrite = new FileWriter("GameState.txt");
+                    System.out.println("Opened");
+                    System.out.println("Working Directory: " + System.getProperty("user.dir"));
+                    if (donebird!=null) {
+                        if (glassOne == null) {
+                            fwrite.write(donebird + " " + nbdone + " " + "glassone");
+                        } else {
+                            fwrite.write(donebird + " " + nbdone);
+                        }
+                    }
+                    fwrite.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                game.setScreen(new Menu(this.game,1, theme));
+            }
 
             if (gameState == 1) {
                 if (nextLevelBounds.contains(mousePos.x, 500-mousePos.y)) {
@@ -303,10 +368,6 @@ public class Level1 implements Screen {
                     String them_2 = getLevelMapStartTheme(String.valueOf(this.bg));
                     game.setScreen(new LevelMap_Start(game, them_2));
                 }
-            }
-
-            if (MenuBounds.contains(mousePos.x, 500-mousePos.y)) {
-                game.setScreen(new Menu(this.game, 1, this.theme));
             }
         }
     }
@@ -326,6 +387,8 @@ public class Level1 implements Screen {
 
             if (selectedBird != null) {
                 currentBird = selectedBird;
+                nbdone++;
+                donebird=currentBird.name;
                 isBirdMovingToCatapult = true;
             }
         }
@@ -364,7 +427,7 @@ public class Level1 implements Screen {
         }
     }
 
-    private void updateBirdPosition(float delta) {
+    public void updateBirdPosition(float delta) {
         if (isReleased && currentBird != null) {
             currentBird.velocity.y -= 105 * delta;
             currentBird.setPos(currentBird.posx + currentBird.velocity.x * delta,
