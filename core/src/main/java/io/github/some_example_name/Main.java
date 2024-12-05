@@ -16,7 +16,7 @@ public class Main extends Game{
     public void create() {
         batch = new SpriteBatch();
         homeImage = new Texture("homebutton.png");
-        setScreen(new Level3(this, "night.png"));
+        setScreen(new HomeScreen(this));
         musicManager = new MusicManager();
         isMusicPlaying = false;
     }
