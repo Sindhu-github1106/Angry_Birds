@@ -41,10 +41,10 @@ public class Level3 implements Screen {
     Block glassOne;
     Block glassTwo;
     Block glassThree;
-    Block woodOne;
+    Block stoneOne;
     Block woodTwo;
     Block woodThree;
-    Block woodOne2;
+    Block woodOne;
     Pig smallpig;
     Pig smallpig2;
     Pig bigpig;
@@ -58,6 +58,7 @@ public class Level3 implements Screen {
     String theme;
     Sprite winSprite;
     Sprite loseSprite;
+    public int nbdone;
 
     private Vector2 initialCatapultPosition;
     private float dragRadius;
@@ -91,13 +92,6 @@ public class Level3 implements Screen {
         retryTexture = new Texture("retry.png");
         retrySprite = new Sprite(retryTexture);
         retrySprite.setSize(1.4f*100,0.5f*100);
-        winTexture = new Texture("win.png");
-        winSprite = new Sprite(winTexture);
-        winSprite.setSize(1f*75,1f*43);
-
-        loseTexture = new Texture("lose.png");
-        loseSprite = new Sprite(loseTexture);
-        loseSprite.setSize(1f*75,1f*43);
 
         backTexture = new Texture("back.png");
         backSprite = new Sprite(backTexture);
@@ -105,7 +99,7 @@ public class Level3 implements Screen {
 
         MenuTexture = new Texture("menu.png");
         Menu= new Sprite(MenuTexture);
-        Menu.setSize(0.7f*100,0.7f*100);
+        Menu.setSize(0.5f*100,0.5f*100);
         winScreenTexture = new Texture("winoverlay.png");
         winScreen = new Sprite(winScreenTexture);
         winScreen.setSize(2.5f*100,3.5f*100);
@@ -118,16 +112,19 @@ public class Level3 implements Screen {
         redBird.setTexture("birdred.png");
         redBird.setSize(50.0f, 50.0f);
         redBird.setPos(0, 122);
+        redBird.damage=1;
 
         chuckBird = new Bird("chuck");
         chuckBird.setTexture("chuck.png");
         chuckBird.setSize(50.0f, 50.0f);
         chuckBird.setPos(60, 122);
+        chuckBird.damage=3;
 
         bombBird = new Bird("bomb");
         bombBird.setTexture("bomb.png");
         bombBird.setSize(50.0f, 50.0f);
         bombBird.setPos(120, 122);
+        bombBird.damage=2;
 
         catapult = new Catapult();
         catapult.setTexture("catapult.png");
@@ -152,44 +149,48 @@ public class Level3 implements Screen {
         woodTwo = new Block("wood",2);
         woodTwo.setTexture("wood2.png");
         woodTwo.setSize(1*100,.2f*100);
+        woodTwo.health=1;
+
+        stoneOne = new Block("stone",1);
+        stoneOne.setTexture("stoone1.png");
+        stoneOne.setSize(1f*100,1f*100);
+        stoneOne.health=3;
+
+        woodThree = new Block("wood",3);
+        woodThree.setTexture("wood3.png");
+        woodThree.setSize(1f*100,1f*100);
+        woodThree.health=1;
 
         woodOne = new Block("wood",1);
         woodOne.setTexture("wood1.png");
         woodOne.setSize(1f*100,1f*100);
+        woodOne.health=1;
 
-        woodThree = new Block("wood",3);
-        woodThree.setTexture("wood3.png");
-        woodThree.setSize(1f*100,1f*100);;
-
-        woodOne2 = new Block("wood",1);
-        woodOne2.setTexture("wood1.png");
-        woodOne2.setSize(1f*100,1f*100);
-
-        glassTwo = new Block("glass",2);
-        glassTwo.setTexture("glass2.jpg");
-        glassTwo.setSize(1*100,.2f*100);
 
         glassOne = new Block("glass",1);
         glassOne.setTexture("glass1.png");
         glassOne.setSize(1f*100,1f*100);
+        glassOne.health=2;
 
         glassThree = new Block("glass",1);
         glassThree.setTexture("glass3.png");
         glassThree.setSize(1f*100,1f*100);
+        glassThree.health=2;
+
         smallpig = new Pig("small");
         smallpig.setTexture("small.png");
         smallpig.setSize(.40f*100,.40f*100);
+        smallpig.health=1;
 
         smallpig2 = new Pig("small");
         smallpig2.setTexture("small.png");
         smallpig2.setSize(.40f*100,.40f*100);
-
-        bigpig = new Pig("big");
-        bigpig.setTexture("jaitrika.png");
-        bigpig.setSize(.75f*100,.75f*100);
+        smallpig2.health=1;
 
         kingpig=new Pig("king");
-        kingpig.setTexture("kingfullhealth.png");
+        kingpig.setTexture("kingpiggie.png");
+        kingpig.setSize(1f*100,1f*100);
+        kingpig.health=3;
 
         currentBird = null;
         isReleased = false;
@@ -217,44 +218,54 @@ public class Level3 implements Screen {
 
         winScreen.setPosition(2.5f*100,1f*100);
         loseScreen.setPosition(2f*100,1f*100);
-        Menu.setPosition(0.2f*100,4.1f*100);
+        Menu.setPosition(7.2f*100,4.1f*100);
         Menu.draw(spriteBatch);
 
-        kingpig.setPos(4.6f*99,2.35f*100);
-        kingpig.sprite.draw(spriteBatch);
+        if (kingpig!=null) {
+            kingpig.setPos(6.6f * 99, 2.15f * 100);
+            kingpig.sprite.draw(spriteBatch);
+        }
 
-        smallpig.setPos(5.8f*100,1.4f*100);
-        smallpig.sprite.draw(spriteBatch);
+        if (smallpig != null) {
+            smallpig.setPos(5.8f * 100, 1.4f * 100);
+            smallpig.sprite.draw(spriteBatch);
+        }
 
-        smallpig2.setPos(5.8f*100,2.55f*100);
-        smallpig2.sprite.draw(spriteBatch);
+        if (smallpig2 != null) {
+            smallpig2.setPos(5.8f * 100, 2.55f * 100);
+            smallpig2.sprite.draw(spriteBatch);
+        }
 
-        woodOne.setPos(5.5f*100,1.2f*100);
-        woodOne.sprite.draw(spriteBatch);
+        if (stoneOne!=null) {
+            stoneOne.setPos(5.5f * 100, 1.2f * 100);
+            stoneOne.sprite.draw(spriteBatch);
+        }
 
-        woodOne2.setPos(5.5f*100,2.35f*100);
-        woodOne2.sprite.draw(spriteBatch);
+        if (woodOne!=null) {
+            woodOne.setPos(5.5f * 100, 2.35f * 100);
+            woodOne.sprite.draw(spriteBatch);
+        }
 
-        woodTwo.setPos(5.5f*100,2.18f*100);
-        woodTwo.sprite.draw(spriteBatch);
+        if (woodTwo!=null) {
+            woodTwo.setPos(5.5f * 100, 2.18f * 100);
+            woodTwo.sprite.draw(spriteBatch);
+        }
 
-        glassTwo.setPos(4.5f*100,2.18f*100);
-        glassTwo.sprite.draw(spriteBatch);
+        if (woodThree!=null) {
+            woodThree.setPos(4.5f * 100, 1.2f * 100);
+            woodThree.sprite.draw(spriteBatch);
+        }
 
-        woodThree.setPos(4.5f*100,1.2f*100);
-        woodThree.sprite.draw(spriteBatch);
+        if (glassThree!=null) {
+            glassThree.setPos(5.5f * 100, 3.3f * 100);
+            glassThree.sprite.draw(spriteBatch);
+        }
 
-        glassThree.setPos(5.5f*100,3.3f*100);
-        glassThree.sprite.draw(spriteBatch);
+        if (glassOne!=null) {
+            glassOne.setPos(6.5f * 100, 1.2f * 100);
+            glassOne.sprite.draw(spriteBatch);
+        }
 
-        glassOne.setPos(6.5f*100,1.2f*100);
-        glassOne.sprite.draw(spriteBatch);
-
-        winSprite.setPosition(2.7f*100,4f*100);
-        winSprite.draw(spriteBatch);
-
-        loseSprite.setPosition(3.7f*100,4f*100);
-        loseSprite.draw(spriteBatch);
 
         if (winScreenDraw==1) {
             winScreen.draw(spriteBatch);
@@ -272,8 +283,6 @@ public class Level3 implements Screen {
     }
     public void input(){
 
-        Rectangle winspriteBounds = winSprite.getBoundingRectangle();
-        Rectangle losespriteBounds = loseSprite.getBoundingRectangle();
         Rectangle nextLevelBounds = nextLevel.getBoundingRectangle();
         Rectangle retrySpriteBounds = retrySprite.getBoundingRectangle();
         Rectangle backSpriteBounds = backSprite.getBoundingRectangle();
@@ -296,16 +305,8 @@ public class Level3 implements Screen {
                 }
             }
 
-            if (winspriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                System.out.println("Mouse click is overlapping with the sprite!"+mousePos.x+"   "+mousePos.y);
-                winScreenDraw=1;
-
-            } else if (losespriteBounds.contains(mousePos.x, 500-mousePos.y)) {
-                System.out.println("Mouse click is overlapping with the sprite!"+mousePos.x+"   "+mousePos.y);
-                winScreenDraw=2;
-
-            } else if (MenuBounds.contains(mousePos.x,500-mousePos.y)){
-                game.setScreen(new Menu(this.game,1,this.theme));
+            if (MenuBounds.contains(mousePos.x,500-mousePos.y)){
+                game.setScreen(new Menu(this.game,3,this.theme));
 
             }
         }
@@ -327,6 +328,7 @@ public class Level3 implements Screen {
 
             if (selectedBird != null) {
                 currentBird = selectedBird;
+                nbdone++;
                 isBirdMovingToCatapult = true;
             }
         }
@@ -393,13 +395,283 @@ public class Level3 implements Screen {
 
                 currentBird = null;
                 isReleased = false;
+                if (smallpig==null &&smallpig2==null && kingpig==null){
+                    winScreenDraw=1;
+                }
 
                 // Progress to next bird or end game
-                if ( chuckBird == null && bombBird == null) {
-                    System.out.println("Birds are finished");
+                if ( chuckBird == null && bombBird == null && redBird==null) {
+                    if (smallpig==null &&smallpig2==null && kingpig==null){
+                        winScreenDraw=1;
+                    } else {
+                        winScreenDraw=2;
+                    }
                 }
             }
+            checkCollision();
         }
+    }
+
+    private void checkCollision() {
+        if (currentBird == null) return; // No bird to check
+
+        Rectangle birdBounds = currentBird.sprite.getBoundingRectangle();
+
+        // Check collision with bigpig
+        if (kingpig != null && birdBounds.overlaps(kingpig.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Big Pig!");
+            handleCollision(kingpig);
+        }
+
+        // Check collision with smallpig
+        if (smallpig != null && birdBounds.overlaps(smallpig.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Small Pig!");
+            handleCollision(smallpig);
+        }
+
+        if (smallpig2 != null && birdBounds.overlaps(smallpig2.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Small Pig!");
+            handleCollision(smallpig2);
+        }
+
+        // Check collision with woodOne
+        if (stoneOne != null && birdBounds.overlaps(stoneOne.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Wood Block One!");
+            handleCollision(stoneOne);
+        }
+
+        if (glassThree != null && birdBounds.overlaps(glassThree.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Wood Block Two!");
+            handleCollision(glassThree);
+        }
+
+        if (glassOne != null && birdBounds.overlaps(glassOne.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Wood Block Two!");
+            handleCollision(glassOne);
+        }
+
+        if (woodOne != null && birdBounds.overlaps(woodOne.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Wood Block Two!");
+            handleCollision(woodOne);
+        }
+
+        // Check collision with woodTwo
+        if (woodTwo != null && birdBounds.overlaps(woodTwo.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Wood Block Two!");
+            handleCollision(woodTwo);
+        }
+
+        if (woodThree != null && birdBounds.overlaps(woodThree.sprite.getBoundingRectangle())) {
+            System.out.println("Collision with Wood Block Two!");
+            handleCollision(woodThree);
+        }
+    }
+
+    private void handleCollision(Object target) { // Use Object or a common superclass/interface
+        if (target instanceof Pig) {
+            Pig pig = (Pig) target;
+
+            if (pig == smallpig) {
+                pig.texture.dispose();
+                smallpig = null;
+                System.out.println("Small Pig removed from the game.");
+            } else if (pig == smallpig2) {
+                pig.texture.dispose();
+                smallpig2 = null;
+            } else if (pig == kingpig) {
+                if (pig.health==3) {
+                    float posx = kingpig.posx;
+                    float posy = kingpig.posy;
+                    float sizex = kingpig.sizex;
+                    float sizey = kingpig.sizey;
+                    kingpig.setTexture("jaitrikabroken.png");
+                    kingpig.setPos(posx, posy);
+                    kingpig.setSize(sizex, sizey);
+                    kingpig.health = 2;
+
+                    System.out.println("Big Pig removed from the game.");
+                } else if (pig.health<=2 && (nbdone==2 || nbdone==3)) {
+                    float posx = kingpig.posx;
+                    float posy = kingpig.posy;
+                    float sizex = kingpig.sizex;
+                    float sizey = kingpig.sizey;
+                    kingpig.setTexture("kinginjured.png");
+                    kingpig.setPos(posx, posy);
+                    kingpig.setSize(sizex, sizey);
+                    kingpig.health = 1;
+                    System.out.println("Big Pig removed from the game.");
+                } else if (pig.health==1 && (nbdone==2 || nbdone==3)){
+                    pig.texture.dispose();
+                    kingpig=null;
+                }
+            }
+            // Optionally, add score increment, play sound, etc.
+        } else if (target instanceof Block) {
+            Block block = (Block) target;
+
+            if (block == stoneOne) {
+
+                if (block.health==3) {
+                    float posx = stoneOne.posx;
+                    float posy = stoneOne.posy;
+                    float sizex = stoneOne.sizex;
+                    float sizey = stoneOne.sizey;
+                    stoneOne.setTexture("stoone1broken.png");
+                    stoneOne.setPos(posx, posy);
+                    stoneOne.setSize(sizex, sizey);
+                    stoneOne.health = 2;
+                } else if (block.health==2 && (nbdone==2 || nbdone==3)) {
+                    float posx = stoneOne.posx;
+                    float posy = stoneOne.posy;
+                    float sizex = stoneOne.sizex;
+                    float sizey = stoneOne.sizey;
+                    stoneOne.setTexture("stoone1cracked.png");
+                    stoneOne.setPos(posx, posy);
+                    stoneOne.setSize(sizex, sizey);
+                    stoneOne.health = 1;
+                }
+                if (block.health==1 && (nbdone==2 || nbdone==3)){
+                    block.texture.dispose();
+                    stoneOne=null;
+                }
+
+
+                if (glassThree!=null){
+                    if (glassThree.health==2) {
+                        float posx = glassThree.posx;
+                        float posy = glassThree.posy;
+                        float sizex = glassThree.sizex;
+                        float sizey = glassThree.sizey;
+                        glassThree.setTexture("glass3broken.png");
+                        glassThree.setPos(posx, posy);
+                        glassThree.setSize(sizex, sizey);
+                        glassThree.health = 1;
+                        System.out.println("Wood Block One removed from the game.");
+                    }
+                    if (glassThree.health<=1 && (nbdone==2 || nbdone==3)){
+                        glassThree.texture.dispose();
+                        glassThree=null;
+                    }
+                }
+                if (woodOne!=null){
+                    woodOne.texture.dispose();
+                    woodOne=null;
+                }
+                if (woodTwo!=null){
+                    woodTwo.texture.dispose();
+                    woodTwo=null;
+                }
+                System.out.println("Wood Block One removed from the game.");
+            } else if (block == woodTwo) {
+                block.texture.dispose();
+                woodTwo = null;
+                if (glassThree!=null){
+                    if (glassThree.health==2) {
+                        float posx = glassThree.posx;
+                        float posy = glassThree.posy;
+                        float sizex = glassThree.sizex;
+                        float sizey = glassThree.sizey;
+                        glassThree.setTexture("glass3broken.png");
+                        glassThree.setPos(posx, posy);
+                        glassThree.setSize(sizex, sizey);
+                        glassThree.health = 1;
+                        System.out.println("Wood Block One removed from the game.");
+                    }
+                    if (glassThree.health<=1 && (nbdone==2 || nbdone==3)){
+                        glassThree.texture.dispose();
+                        glassThree=null;
+                    }
+                }
+                if (woodOne!=null){
+                    woodOne.texture.dispose();
+                    woodOne=null;
+                }
+            } else if (block == woodOne) {
+                woodOne.texture.dispose();
+                woodOne = null;
+                if (glassThree!=null){
+                    if (glassThree.health==2) {
+                        float posx = glassThree.posx;
+                        float posy = glassThree.posy;
+                        float sizex = glassThree.sizex;
+                        float sizey = glassThree.sizey;
+                        glassThree.setTexture("glass3broken.png");
+                        glassThree.setPos(posx, posy);
+                        glassThree.setSize(sizex, sizey);
+                        glassThree.health = 1;
+                        System.out.println("Wood Block One removed from the game.");
+                    }
+                    if (glassThree.health<=1 && (nbdone==2 || nbdone==3)){
+                        glassThree.texture.dispose();
+                        glassThree=null;
+                    }
+                }
+            } else if (block == woodThree) {
+                block.texture.dispose();
+                woodThree = null;
+                System.out.println("Wood Block Two removed from the game.");
+            } else if (block == glassOne) {
+                if (block.health==2) {
+                    float posx = glassOne.posx;
+                    float posy = glassOne.posy;
+                    float sizex = glassOne.sizex;
+                    float sizey = glassOne.sizey;
+                    glassOne.setTexture("glass1broken.png");
+                    glassOne.setPos(posx, posy);
+                    glassOne.setSize(sizex, sizey);
+                    glassOne.health = 1;
+                    System.out.println("Wood Block One removed from the game.");
+                }
+                if (block.health<=1 && (nbdone==2 || nbdone==3)){
+                    block.texture.dispose();
+                    glassOne=null;
+                }
+                if (currentBird == bombBird || currentBird == chuckBird){
+                    glassOne=null;
+                }
+                if (kingpig!=null){
+                    kingpig.health=kingpig.health-1;
+                }
+            } else if (block == glassThree) {
+                if (block.health==2) {
+                    float posx = glassThree.posx;
+                    float posy = glassThree.posy;
+                    float sizex = glassThree.sizex;
+                    float sizey = glassThree.sizey;
+                    glassThree.setTexture("glass3broken.png");
+                    glassThree.setPos(posx, posy);
+                    glassThree.setSize(sizex, sizey);
+                    glassThree.health = 1;
+                    System.out.println("Wood Block One removed from the game.");
+                }
+                if (block.health==1 && (nbdone==2 || nbdone==3)){
+                    block.texture.dispose();
+                    glassThree=null;
+                }
+                if (currentBird == bombBird || currentBird == chuckBird){
+                    glassThree=null;
+                }
+            }
+            // Similarly, handle other block types if any
+        }
+
+        // **Do not stop the bird's movement upon collision**
+        // The bird will continue its trajectory until it hits the ground
+    }
+
+    private void removeCurrentBird() {
+        if (currentBird == chuckBird) {
+            chuckBird.texture.dispose();
+            chuckBird = null;
+            System.out.println("Chuck Bird removed from the game.");
+        } else if (currentBird == bombBird) {
+            bombBird.texture.dispose();
+            bombBird = null;
+            System.out.println("Bomb Bird removed from the game.");
+        }
+
+        currentBird = null;
+        isReleased = false;
     }
 
     @Override
