@@ -12,6 +12,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Pixmap;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.logging.Level;
 
 public class LevelMap_Resume implements Screen {
@@ -93,12 +95,17 @@ public class LevelMap_Resume implements Screen {
 
                 if (triggerLevel1Rect.contains(screenX, adjustedY) && isTouchedInsideSprite(triggerLevel1Pixmap, screenX, adjustedY, triggerLevel1Sprite)) {
                     System.out.println("Trigger Level 1 activated");
+                    triggerLevel1Sprite=null;
+
                     game.setScreen(new Level1(game,theme));
                     return true;
                 }
 
                 if (triggerLevel2Rect.contains(screenX, adjustedY) && isTouchedInsideSprite(triggerLevel2Pixmap, screenX, adjustedY, triggerLevel2Sprite)) {
                     System.out.println("Trigger Level 2 activated");
+                    triggerLevel1Sprite=null;
+                    homeButtonImage.dispose();
+                    homeButtonRectangle=null;
                     game.setScreen(new Level2(game,theme));
                     return true;
                 }
@@ -122,7 +129,9 @@ public class LevelMap_Resume implements Screen {
         batch.draw(backgroundImage, 0, 0, 800, 500);
         batch.draw(backgroundMusicImage, backgroundMusicRectangle.x, backgroundMusicRectangle.y, backgroundMusicRectangle.width, backgroundMusicRectangle.height);
         batch.draw(homeButtonImage, homeButtonRectangle.x, homeButtonRectangle.y, homeButtonRectangle.width, homeButtonRectangle.height);
-        batch.draw(triggerLevel1Sprite, triggerLevel1Rect.x, triggerLevel1Rect.y);
+        if (triggerLevel1Sprite!=null){
+            batch.draw(triggerLevel1Sprite, triggerLevel1Rect.x, triggerLevel1Rect.y);
+        }
         batch.draw(triggerLevel2Sprite, triggerLevel2Rect.x, triggerLevel2Rect.y);
         batch.draw(triggerLevel3Sprite, triggerLevel3Rect.x, triggerLevel3Rect.y);
         batch.draw(Level_Map,193.3F,327.4F+50,414,105);
@@ -155,11 +164,13 @@ public class LevelMap_Resume implements Screen {
     }
 
     private boolean isTouchedInsideSprite(Pixmap pixmap, int screenX, float adjustedY, Sprite sprite) {
-        int localX = (int) (screenX - sprite.getX());
-        int localY = (int) (adjustedY - sprite.getY());
+        if (sprite!=null) {
+            int localX = (int) (screenX - sprite.getX());
+            int localY = (int) (adjustedY - sprite.getY());
 
-        if (localX >= 0 && localX < pixmap.getWidth() && localY >= 0 && localY < pixmap.getHeight()) {
-            return (pixmap.getPixel(localX, localY) & 0x000000FF) != 0;
+            if (localX >= 0 && localX < pixmap.getWidth() && localY >= 0 && localY < pixmap.getHeight()) {
+                return (pixmap.getPixel(localX, localY) & 0x000000FF) != 0;
+            }
         }
         return false;
     }
