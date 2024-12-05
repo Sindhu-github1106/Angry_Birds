@@ -12,6 +12,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Pixmap;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.logging.Level;
 
 public class LevelMap_l3unclocked implements Screen {
@@ -31,6 +33,7 @@ public class LevelMap_l3unclocked implements Screen {
     String theme;
     private Texture triggerLevel1Image, triggerLevel2Image, triggerLevel3Image;
     private Sprite triggerLevel1Sprite, triggerLevel2Sprite, triggerLevel3Sprite;
+    private Sprite homeButtonSprite;
     private Rectangle triggerLevel1Rect, triggerLevel2Rect, triggerLevel3Rect;
 
     LevelMap_l3unclocked(Game game, String theme) {
@@ -55,7 +58,8 @@ public class LevelMap_l3unclocked implements Screen {
 
 
         backgroundMusicRectangle = new Rectangle(115, 417, 50, 50);
-        homeButtonRectangle = new Rectangle(23, 407, 70, 70);
+        homeButtonSprite = new Sprite(homeButtonImage);
+        homeButtonSprite.setPosition(70, 70);
         prev_page_rect = new Rectangle(28, 29, 44, 41);
         triggerLevel1Rect = new Rectangle(60-15, 133-10-10, 134, 91);
         triggerLevel2Rect = new Rectangle(386-10-5, 61-10-5, 134-10, 94);
@@ -93,17 +97,29 @@ public class LevelMap_l3unclocked implements Screen {
 
                 if (triggerLevel1Rect.contains(screenX, adjustedY) && isTouchedInsideSprite(triggerLevel1Pixmap, screenX, adjustedY, triggerLevel1Sprite)) {
                     System.out.println("Trigger Level 1 activated");
+                    homeButtonImage.dispose();
+                    homeButtonSprite=null;
+                    try {
+                        FileWriter fwrite = new FileWriter("GameState.txt");
+                        fwrite.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     game.setScreen(new Level1(game,theme));
                     return true;
                 }
 
                 if (triggerLevel2Rect.contains(screenX, adjustedY) && isTouchedInsideSprite(triggerLevel2Pixmap, screenX, adjustedY, triggerLevel2Sprite)) {
                     System.out.println("Trigger Level 2 activated");
+                    homeButtonImage.dispose();
+                    homeButtonSprite=null;
                     game.setScreen(new Level2(game,theme));
                     return true;
                 }
 
                 if (triggerLevel3Rect.contains(screenX, adjustedY) && isTouchedInsideSprite(triggerLevel3Pixmap, screenX, adjustedY, triggerLevel3Sprite)) {
+                    homeButtonImage.dispose();
+                    homeButtonSprite=null;
                     game.setScreen(new Level3(game,theme));
                     return true;
                 }
@@ -121,7 +137,7 @@ public class LevelMap_l3unclocked implements Screen {
         batch.begin();
         batch.draw(backgroundImage, 0, 0, 800, 500);
         batch.draw(backgroundMusicImage, backgroundMusicRectangle.x, backgroundMusicRectangle.y, backgroundMusicRectangle.width, backgroundMusicRectangle.height);
-        batch.draw(homeButtonImage, homeButtonRectangle.x, homeButtonRectangle.y, homeButtonRectangle.width, homeButtonRectangle.height);
+        batch.draw(homeButtonSprite,23, 407);
         batch.draw(triggerLevel1Sprite, triggerLevel1Rect.x, triggerLevel1Rect.y);
         batch.draw(triggerLevel2Sprite, triggerLevel2Rect.x, triggerLevel2Rect.y);
         batch.draw(triggerLevel3Sprite, triggerLevel3Rect.x, triggerLevel3Rect.y);
